@@ -1,0 +1,24 @@
+闲鱼管家桌面版 (xianyu-butler-desktop)
+Copyright (C) 2026 xianyu-super-butler contributors
+
+本程序是 xianyu-super-butler（https://github.com/23Star/xianyu-super-butler）
+的桌面打包发行版，上游又基于 zhinianboke/xianyu-auto-reply。
+
+本程序与上游源码均基于 AGPL-3.0（或其更新版本）授权：
+你可以在遵守 AGPL-3.0 的前提下自由使用、修改和再分发；
+以网络服务形式提供本程序时，同样需要公开修改后的完整源代码。
+本仓库 `backend/` 目录包含上游源码副本及其修改说明（见 README「与上游的差异」），
+许可证全文见 backend/LICENSE。
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.

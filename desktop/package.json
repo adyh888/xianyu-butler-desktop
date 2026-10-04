@@ -1,0 +1,80 @@
+{
+  "name": "xianyu-butler-desktop",
+  "productName": "闲鱼管家",
+  "version": "1.0.0",
+  "description": "闲鱼超级管家桌面版 —— 多账号自动回复/自动发货/数据看板",
+  "main": "main.js",
+  "author": "xianyu-super-butler contributors",
+  "homepage": "https://github.com/23Star/xianyu-super-butler",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "dist:mac": "electron-builder --mac",
+    "dist:win": "electron-builder --win"
+  },
+  "devDependencies": {
+    "electron": "^44.5.1",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.xianyubutler.desktop",
+    "productName": "闲鱼管家",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.js",
+      "splash.html",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../build-output/backend/XianyuButlerBackend",
+        "to": "backend"
+      },
+      {
+        "from": "../build-output/browsers",
+        "to": "browsers"
+      }
+    ],
+    "mac": {
+      "target": [
+        {
+          "target": "dmg"
+        }
+      ],
+      "category": "public.app-category.productivity",
+      "identity": null,
+      "icon": "build/icon.icns",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false
+    },
+    "dmg": {
+      "title": "闲鱼管家 ${version}",
+      "artifactName": "闲鱼管家-${version}-${arch}.dmg",
+      "writeUpdateInfo": false
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "artifactName": "闲鱼管家-${version}-x64.exe"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}

@@ -1,0 +1,13 @@
+# 构建产物
+/build-output/
+/build/
+desktop/release/
+desktop/node_modules/
+backend/frontend/node_modules/
+backend/build/
+backend/dist/
+backend/.venv/
+
+# 运行期数据
+*.log
+.DS_Store

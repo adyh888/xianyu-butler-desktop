@@ -1,0 +1,105 @@
+name: Build Desktop Installers
+
+# 推送 v* 标签时自动发布 Release；也可在 Actions 页面手动触发
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14        # Apple Silicon → arm64 dmg
+          - os: macos-13        # Intel → x64 dmg
+          - os: windows-latest  # Windows → x64 exe 安装包
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/frontend/package-lock.json
+
+      - name: Build frontend
+        working-directory: backend/frontend
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+
+      - name: Install backend deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt pyinstaller
+
+      - name: Download Chromium bundle
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/build-output/browsers
+        run: python -m playwright install chromium
+
+      - name: Freeze backend (PyInstaller)
+        working-directory: backend
+        run: pyinstaller xianyu_backend.spec --distpath ../build-output/backend --workpath ../build/pyinstaller --noconfirm
+
+      - name: Install desktop shell deps
+        working-directory: desktop
+        run: npm ci --no-audit --no-fund
+
+      - name: Build macOS app
+        if: runner.os == 'macOS'
+        working-directory: desktop
+        run: npx electron-builder --mac --publish never
+
+      - name: Build Windows installer
+        if: runner.os == 'Windows'
+        working-directory: desktop
+        run: npx electron-builder --win --publish never
+
+      - name: Collect artifacts
+        shell: bash
+        run: mkdir -p artifacts && find desktop/release -maxdepth 1 \( -name '*.dmg' -o -name '*.exe' \) -exec cp {} artifacts/ \;
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: xianyu-butler-${{ matrix.os }}
+          path: artifacts/*
+          if-no-files-found: error
+
+  release:
+    name: Publish draft release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: artifacts
+
+      - name: Attach to GitHub Release (草稿)
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+          draft: true
+          generate_release_notes: true
