@@ -18,7 +18,7 @@ jobs:
       matrix:
         include:
           - os: macos-14        # Apple Silicon → arm64 dmg
-          - os: macos-13        # Intel → x64 dmg
+          - os: macos-15-intel  # Intel → x64 dmg（macos-13 已淘汰，15-intel 可用到 2027）
           - os: windows-latest  # Windows → x64 exe 安装包
     runs-on: ${{ matrix.os }}
 
